@@ -14,8 +14,15 @@ address = "{}/add_temp".format(URL)
 temps: List[float] = []
 
 def meassure():
-    temperature_c = dhtDevice.temperature
-    temps.append(float(temperature_c)) #type: ignore
+    try:
+        temperature_c = dhtDevice.temperature
+        temps.append(float(temperature_c)) #type: ignore
+    except RuntimeError as error:
+        time.sleep(2.0)
+        meassure()
+    except Exception as error:
+        dhtDevice.exit()
+        raise error
 
 def repeat_meassure():
     for _ in range(5):
@@ -31,7 +38,7 @@ def add_temp():
         "m": date.month,
         "d": date.day,
         "h": date.hour,
-        "averageTemp": str(temp)
+        "averageTemp": str(round(temp, 2))
     }
     temps.clear()
     try:
@@ -40,14 +47,5 @@ def add_temp():
         print(error)
 
 while True:
-    try:
-        add_temp()
-
-    except RuntimeError as error:
-        time.sleep(2.0)
-        continue
-    except Exception as error:
-        dhtDevice.exit()
-        raise error
-
+    add_temp()
     time.sleep(60 * 60)
