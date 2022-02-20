@@ -19,7 +19,7 @@ def meassure():
         temperature_c = dhtDevice.temperature
         temps.append(float(temperature_c)) #type: ignore
     except RuntimeError as error:
-        time.sleep(2)
+        time.sleep(3)
         meassure()
     except Exception as error:
         dhtDevice.exit()
@@ -31,7 +31,6 @@ def repeat_meassure():
         time.sleep(2)
 
 def add_temp(address: str):
-    repeat_meassure()
     temp = sum(temps) / len(temps)
     date = datetime.datetime.now()
     data = {
@@ -47,18 +46,26 @@ def add_temp(address: str):
     except requests.ConnectionError as error:
         print(error)
 
+def last_temp():
+    meassure()
+    add_temp(last_address)
+
+def hour_temp():
+    repeat_meassure()
+    add_temp(hour_address)
+
 def wait_till_whole():
     date = datetime.datetime.now()
     #print("measured at {}".format(date.hour))
     time.sleep((59 - date.minute) * 60)
 
-add_temp(last_address)
+last_temp()
 time.sleep(60)
 
 while True:
     date = datetime.datetime.now()
     if date.minute == 0:
-        add_temp(hour_address)
+        hour_temp()
     elif date.minute % 4.0 == 0.0:
-        add_temp(last_address)
+        last_temp()
     time.sleep(50)
