@@ -19,7 +19,7 @@ def meassure():
         temperature_c = dhtDevice.temperature
         temps.append(float(temperature_c)) #type: ignore
     except RuntimeError as error:
-        time.sleep(3)
+        time.sleep(2)
         meassure()
     except Exception as error:
         dhtDevice.exit()
@@ -66,6 +66,6 @@ while True:
     date = datetime.datetime.now()
     if date.minute == 0:
         hour_temp()
-    elif date.minute % 4.0 == 0.0:
+    elif date.minute % 5.0 == 0.0:
         last_temp()
     time.sleep(50)
